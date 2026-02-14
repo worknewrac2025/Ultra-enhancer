@@ -2,7 +2,8 @@ from telegram import Update
 from telegram.ext import Application, MessageHandler, filters, ContextTypes
 from PIL import Image, ImageEnhance
 
-BOT_TOKEN = "8492999841:AAHv5SX4WxkfokoZZSRiKuZdIqW6zdKB7OI"
+import os
+BOT_TOKEN = os.getenv("BOT_TOKEN")
 
 # Image enhancement function
 def enhance_image():
