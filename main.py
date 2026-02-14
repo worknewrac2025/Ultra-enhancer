@@ -1,19 +1,16 @@
+import os
 from telegram import Update
 from telegram.ext import Application, MessageHandler, filters, ContextTypes
 from PIL import Image, ImageEnhance
 
-import os
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 
-# Image enhancement function
 def enhance_image():
     img = Image.open("input.jpg")
 
-    # increase sharpness
     sharp = ImageEnhance.Sharpness(img)
     img = sharp.enhance(2.5)
 
-    # increase contrast
     contrast = ImageEnhance.Contrast(img)
     img = contrast.enhance(1.3)
 
@@ -26,7 +23,7 @@ async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     await file.download_to_drive("input.jpg")
 
-    await update.message.reply_text("Enhancing image... ⏳")
+    await update.message.reply_text("Enhancing image...")
 
     enhance_image()
 
