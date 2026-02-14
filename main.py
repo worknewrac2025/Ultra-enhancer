@@ -5,29 +5,39 @@ from PIL import Image, ImageEnhance
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 
+
 def enhance_image():
-    img = Image.open("input.jpg")
+    with Image.open("input.jpg") as img:
+        sharp = ImageEnhance.Sharpness(img)
+        img = sharp.enhance(2.0)
 
-    sharp = ImageEnhance.Sharpness(img)
-    img = sharp.enhance(2.5)
+        contrast = ImageEnhance.Contrast(img)
+        img = contrast.enhance(1.2)
 
-    contrast = ImageEnhance.Contrast(img)
-    img = contrast.enhance(1.3)
-
-    img.save("output.jpg")
+        img.save("output.jpg")
 
 
 async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    photo = update.message.photo[-1]
-    file = await photo.get_file()
+    try:
+        photo = update.message.photo[-1]
+        file = await photo.get_file()
 
-    await file.download_to_drive("input.jpg")
+        await file.download_to_drive("input.jpg")
 
-    await update.message.reply_text("Enhancing image...")
+        await update.message.reply_text("Enhancing image...")
 
-    enhance_image()
+        enhance_image()
 
-    await update.message.reply_photo(photo=open("output.jpg", "rb"))
+        with open("output.jpg", "rb") as f:
+            await update.message.reply_photo(photo=f)
+
+        # cleanup (VERY IMPORTANT for Railway)
+        os.remove("input.jpg")
+        os.remove("output.jpg")
+
+    except Exception as e:
+        await update.message.reply_text("Error while enhancing image.")
+        print(e)
 
 
 app = Application.builder().token(BOT_TOKEN).build()
